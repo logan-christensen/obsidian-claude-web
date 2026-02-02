@@ -18,14 +18,23 @@
 
         <!-- Main Content -->
         <div class="main-content">
-            <!-- Sidebar - File Browser -->
+            <!-- Sidebar -->
             <aside class="sidebar" id="sidebar">
-                <div class="sidebar-header">
-                    <h2>Your Vault</h2>
-                    <button id="refresh-files-btn" class="icon-btn" title="Refresh">🔄</button>
+                <div class="sidebar-section">
+                    <div class="sidebar-header">
+                        <h2>Chats</h2>
+                        <button id="new-chat-btn" class="icon-btn" title="New Chat">+</button>
+                    </div>
+                    <div id="chat-list" class="chat-list"></div>
                 </div>
-                <div id="file-tree" class="file-tree">
-                    <div class="loading">Loading vault...</div>
+                <div class="sidebar-section sidebar-files">
+                    <div class="sidebar-header">
+                        <h2>Your Vault</h2>
+                        <button id="refresh-files-btn" class="icon-btn" title="Refresh">🔄</button>
+                    </div>
+                    <div id="file-tree" class="file-tree">
+                        <div class="loading">Loading vault...</div>
+                    </div>
                 </div>
             </aside>
 
