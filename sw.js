@@ -4,8 +4,7 @@ const urlsToCache = [
   '/index.html',
   '/styles.css',
   '/app.js',
-  '/manifest.json',
-  'https://sdk.amazonaws.com/js/aws-sdk-2.1692.0.min.js'
+  '/manifest.json'
 ];
 
 // Install event - cache files
