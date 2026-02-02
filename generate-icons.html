@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Icon Generator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #e5e5e5;
+        }
+        h1 {
+            color: #7c3aed;
+        }
+        .canvas-container {
+            display: flex;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        .canvas-wrapper {
+            text-align: center;
+        }
+        canvas {
+            border: 2px solid #7c3aed;
+            border-radius: 10px;
+            background: white;
+        }
+        button {
+            background: #7c3aed;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #6d28d9;
+        }
+        .instructions {
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .instructions code {
+            background: #3d3d3d;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📱 PWA Icon Generator</h1>
+    
+    <div class="instructions">
+        <h2>Instructions:</h2>
+        <ol>
+            <li>Icons will be generated automatically with a purple gradient background</li>
+            <li>Click "Download 192x192" and save as <code>icon-192.png</code></li>
+            <li>Click "Download 512x512" and save as <code>icon-512.png</code></li>
+            <li>Place both icons in your app's root directory</li>
+            <li>Done! Your PWA now has icons.</li>
+        </ol>
+    </div>
+
+    <div class="canvas-container">
+        <div class="canvas-wrapper">
+            <h3>192x192</h3>
+            <canvas id="icon-192" width="192" height="192"></canvas>
+            <br>
+            <button onclick="downloadIcon('icon-192', 'icon-192.png')">Download 192x192</button>
+        </div>
+        
+        <div class="canvas-wrapper">
+            <h3>512x512</h3>
+            <canvas id="icon-512" width="512" height="512"></canvas>
+            <br>
+            <button onclick="downloadIcon('icon-512', 'icon-512.png')">Download 512x512</button>
+        </div>
+    </div>
+
+    <script>
+        function drawIcon(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            const size = canvas.width;
+            
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#7c3aed');
+            gradient.addColorStop(1, '#ec4899');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Draw notepad icon
+            const padding = size * 0.15;
+            const noteWidth = size - (padding * 2);
+            const noteHeight = size - (padding * 2);
+            
+            // White paper
+            ctx.fillStyle = 'white';
+            ctx.fillRect(padding, padding, noteWidth, noteHeight);
+            
+            // Lines on paper
+            ctx.strokeStyle = '#e5e5e5';
+            ctx.lineWidth = size * 0.01;
+            const lineSpacing = noteHeight / 8;
+            
+            for (let i = 1; i <= 6; i++) {
+                const y = padding + (lineSpacing * i);
+                ctx.beginPath();
+                ctx.moveTo(padding + (noteWidth * 0.1), y);
+                ctx.lineTo(padding + (noteWidth * 0.9), y);
+                ctx.stroke();
+            }
+            
+            // Left margin line
+            ctx.strokeStyle = '#7c3aed';
+            ctx.lineWidth = size * 0.015;
+            ctx.beginPath();
+            ctx.moveTo(padding + (noteWidth * 0.15), padding + (noteHeight * 0.1));
+            ctx.lineTo(padding + (noteWidth * 0.15), padding + (noteHeight * 0.9));
+            ctx.stroke();
+            
+            // Top holes (spiral binding effect)
+            ctx.fillStyle = '#7c3aed';
+            const holeRadius = size * 0.02;
+            const holeCount = 5;
+            const holeSpacing = noteWidth / (holeCount + 1);
+            
+            for (let i = 1; i <= holeCount; i++) {
+                const x = padding + (holeSpacing * i);
+                const y = padding + (noteHeight * 0.05);
+                ctx.beginPath();
+                ctx.arc(x, y, holeRadius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Add emoji or text
+            ctx.font = `bold ${size * 0.3}px Arial`;
+            ctx.fillStyle = '#7c3aed';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('📝', size / 2, size / 2 + (size * 0.05));
+        }
+        
+        function downloadIcon(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // Generate icons on page load
+        window.addEventListener('load', () => {
+            drawIcon('icon-192');
+            drawIcon('icon-512');
+        });
+    </script>
+</body>
+</html>
