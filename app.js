@@ -329,11 +329,13 @@ async function sendMessage() {
             })
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-            throw new Error(`API Error: ${response.status} ${response.statusText}`);
+            const detail = data.error?.message || data.details || data.error || response.statusText;
+            throw new Error(`API Error ${response.status}: ${detail}`);
         }
 
-        const data = await response.json();
         const assistantMessage = data.content[0].text;
         
         // Update loading message with actual response

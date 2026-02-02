@@ -8,13 +8,22 @@ export default async (req) => {
 
     try {
         const body = await req.json();
+        const apiKey = req.headers.get('x-api-key');
+        const anthropicVersion = req.headers.get('anthropic-version');
+
+        if (!apiKey) {
+            return new Response(JSON.stringify({ error: 'Missing x-api-key header' }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
 
         const response = await fetch('https://api.anthropic.com/v1/messages', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'x-api-key': req.headers.get('x-api-key'),
-                'anthropic-version': req.headers.get('anthropic-version')
+                'x-api-key': apiKey,
+                'anthropic-version': anthropicVersion || '2023-06-01'
             },
             body: JSON.stringify(body)
         });
@@ -25,7 +34,10 @@ export default async (req) => {
             headers: { 'Content-Type': 'application/json' }
         });
     } catch (error) {
-        return new Response(JSON.stringify({ error: 'Failed to reach Anthropic API' }), {
+        return new Response(JSON.stringify({
+            error: 'Failed to reach Anthropic API',
+            details: error.message
+        }), {
             status: 502,
             headers: { 'Content-Type': 'application/json' }
         });
