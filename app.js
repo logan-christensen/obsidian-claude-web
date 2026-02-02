@@ -7,7 +7,8 @@ const state = {
         s3Bucket: '',
         s3AccessKey: '',
         s3SecretKey: '',
-        s3Prefix: ''
+        s3Prefix: '',
+        obsidianVault: ''
     },
     s3: null,
     files: [],
@@ -47,6 +48,7 @@ function saveSettings() {
     state.config.s3AccessKey = document.getElementById('s3-access-key').value;
     state.config.s3SecretKey = document.getElementById('s3-secret-key').value;
     state.config.s3Prefix = document.getElementById('s3-prefix').value;
+    state.config.obsidianVault = document.getElementById('obsidian-vault').value;
 
     // Save to localStorage
     localStorage.setItem('obsidian-claude-config', JSON.stringify(state.config));
@@ -69,6 +71,7 @@ function populateSettingsForm() {
     document.getElementById('s3-access-key').value = state.config.s3AccessKey;
     document.getElementById('s3-secret-key').value = state.config.s3SecretKey;
     document.getElementById('s3-prefix').value = state.config.s3Prefix;
+    document.getElementById('obsidian-vault').value = state.config.obsidianVault;
 }
 
 function isConfigured() {
@@ -186,13 +189,29 @@ function renderTreeNode(node, container, level = 0) {
             const fileDiv = document.createElement('div');
             fileDiv.className = 'file-item';
             fileDiv.style.paddingLeft = `${level * 1}rem`;
-            fileDiv.innerHTML = `📄 ${file.name.split('/').pop()}`;
             fileDiv.dataset.key = file.key;
-            
+
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'file-name';
+            nameSpan.textContent = `📄 ${file.name.split('/').pop()}`;
+            fileDiv.appendChild(nameSpan);
+
+            if (state.config.obsidianVault) {
+                const openBtn = document.createElement('button');
+                openBtn.className = 'open-in-obsidian-btn';
+                openBtn.title = 'Open in Obsidian';
+                openBtn.textContent = '↗';
+                openBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openInObsidian(file);
+                });
+                fileDiv.appendChild(openBtn);
+            }
+
             if (state.selectedFiles.has(file.key)) {
                 fileDiv.classList.add('selected');
             }
-            
+
             fileDiv.addEventListener('click', () => toggleFileSelection(file, fileDiv));
             container.appendChild(fileDiv);
         });
@@ -248,6 +267,12 @@ function renderContextFiles() {
     });
 }
 
+function openInObsidian(file) {
+    const filePath = file.name.replace(/\.md$/, '');
+    const url = `obsidian://open?vault=${encodeURIComponent(state.config.obsidianVault)}&file=${encodeURIComponent(filePath)}`;
+    window.open(url);
+}
+
 function removeContextFile(key) {
     state.selectedFiles.delete(key);
     renderContextFiles();
@@ -284,7 +309,7 @@ async function sendMessage() {
     const loadingMsg = addMessage('assistant', 'Thinking...');
     
     try {
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
+        const response = await fetch('/api/messages', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -437,7 +462,7 @@ async function testConnection() {
         }).promise();
         
         // Test Claude API
-        const claudeResponse = await fetch('https://api.anthropic.com/v1/messages', {
+        const claudeResponse = await fetch('/api/messages', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

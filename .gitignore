@@ -13,3 +13,4 @@ Thumbs.db
 
 # Note: Don't commit real credentials!
 # The app stores them in localStorage
+obsidian-sync-user_accessKeys.csv
