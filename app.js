@@ -40,15 +40,16 @@ function loadSettings() {
 }
 
 function saveSettings() {
-    // Get values from form
-    state.config.claudeApiKey = document.getElementById('claude-api-key').value;
+    // Get values from form, stripping any hidden whitespace characters
+    const clean = (id) => document.getElementById(id).value.replace(/[\s\u00A0]+/g, ' ').trim();
+    state.config.claudeApiKey = clean('claude-api-key');
     state.config.claudeModel = document.getElementById('claude-model').value;
-    state.config.s3Region = document.getElementById('s3-region').value;
-    state.config.s3Bucket = document.getElementById('s3-bucket').value;
-    state.config.s3AccessKey = document.getElementById('s3-access-key').value;
-    state.config.s3SecretKey = document.getElementById('s3-secret-key').value;
-    state.config.s3Prefix = document.getElementById('s3-prefix').value;
-    state.config.obsidianVault = document.getElementById('obsidian-vault').value;
+    state.config.s3Region = clean('s3-region');
+    state.config.s3Bucket = clean('s3-bucket');
+    state.config.s3AccessKey = clean('s3-access-key');
+    state.config.s3SecretKey = clean('s3-secret-key');
+    state.config.s3Prefix = document.getElementById('s3-prefix').value.trim();
+    state.config.obsidianVault = document.getElementById('obsidian-vault').value.trim();
 
     // Save to localStorage
     localStorage.setItem('obsidian-claude-config', JSON.stringify(state.config));
